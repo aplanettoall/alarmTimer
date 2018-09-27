@@ -1,0 +1,430 @@
+CCS PCM C Compiler, Version 5.007, 61971               24-Tem-17 14:03
+
+               Filename:   C:\Users\user\Desktop\kronometre-20170711T071112Z-001\kronometre\puroject\code\main.lst
+
+               ROM used:   273 words (3%)
+                           Largest free fragment is 2048
+               RAM used:   9 (2%) at main() level
+                           11 (3%) worst case
+               Stack used: 0 locations
+               Stack size: 8
+
+*
+0000:  MOVLW  00
+0001:  MOVWF  0A
+0002:  GOTO   03C
+0003:  NOP
+.................... #include <16f877A.h>     // Kullanýlacak denetleyicinin aþlýk dosyasý tanýtýlýyor. 
+.................... //////// Standard Header file for the PIC16F877A device //////////////// 
+.................... #device PIC16F877A 
+0004:  BCF    0A.0
+0005:  BCF    0A.1
+0006:  BCF    0A.2
+0007:  ADDWF  02,F
+0008:  RETLW  3F
+0009:  RETLW  06
+000A:  RETLW  5B
+000B:  RETLW  4F
+000C:  RETLW  66
+000D:  RETLW  6D
+000E:  RETLW  7D
+000F:  RETLW  07
+0010:  RETLW  7F
+0011:  RETLW  6F
+0012:  MOVF   24,W
+0013:  CLRF   78
+0014:  SUBWF  23,W
+0015:  BTFSC  03.0
+0016:  GOTO   01A
+0017:  MOVF   23,W
+0018:  MOVWF  77
+0019:  GOTO   026
+001A:  CLRF   77
+001B:  MOVLW  08
+001C:  MOVWF  25
+001D:  RLF    23,F
+001E:  RLF    77,F
+001F:  MOVF   24,W
+0020:  SUBWF  77,W
+0021:  BTFSC  03.0
+0022:  MOVWF  77
+0023:  RLF    78,F
+0024:  DECFSZ 25,F
+0025:  GOTO   01D
+0026:  RETURN
+....................  
+.................... #list 
+....................  
+....................  
+.................... #fuses XT,NOWDT,NOPROTECT,NOBROWNOUT,NOLVP,NOPUT,NOWRT,NODEBUG,NOCPD 
+.................... #use delay(clock=4000000)   // Gecikme fonksiyonu için kullanýlan osilatör frekansý belirtiliyor 
+0027:  MOVLW  23
+0028:  MOVWF  04
+0029:  BCF    03.7
+002A:  MOVF   00,W
+002B:  BTFSC  03.2
+002C:  GOTO   03B
+002D:  MOVLW  01
+002E:  MOVWF  78
+002F:  CLRF   77
+0030:  DECFSZ 77,F
+0031:  GOTO   030
+0032:  DECFSZ 78,F
+0033:  GOTO   02F
+0034:  MOVLW  4A
+0035:  MOVWF  77
+0036:  DECFSZ 77,F
+0037:  GOTO   036
+0038:  GOTO   039
+0039:  DECFSZ 00,F
+003A:  GOTO   02D
+003B:  RETURN
+....................  
+....................  
+.................... #use fast_io(a) // Port yönlendirme komutlarý a portu için geçerli 
+.................... #use fast_io(b) // Port yönlendirme komutlarý b portu için geçerli 
+....................  
+.................... #define   display_1   pin_a0      //display_1 ifadesi pin_a0 ifadesine eþleniyor 
+.................... #define   display_2   pin_a1 
+.................... #define   display_3   pin_a2 
+.................... #define   buzzer      pin_a3 
+.................... #define   buton_azal  pin_a4 
+.................... #define   buton_art   pin_a5 
+....................  
+.................... char dakika=2, saniye=60, sayi=100;       // char tipinde deðiþkenler tanýmlanýyor 
+....................  
+.................... const int digit[10]={0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F}; 
+....................  
+.................... /********* ANA PROGRAM FONKSÝYONU********/ 
+....................  
+.................... void main () 
+003C:  MOVLW  02
+003D:  MOVWF  20
+003E:  MOVLW  3C
+003F:  MOVWF  21
+0040:  MOVLW  64
+0041:  MOVWF  22
+0042:  BSF    03.5
+0043:  BSF    1F.0
+0044:  BSF    1F.1
+0045:  BSF    1F.2
+0046:  BCF    1F.3
+0047:  MOVLW  07
+0048:  MOVWF  1C
+0049:  BCF    03.7
+004A:  MOVLW  1F
+004B:  ANDWF  03,F
+.................... { 
+....................    setup_psp(PSP_DISABLED);        // PSP birimi devre dýþý 
+004C:  BCF    09.4
+....................    setup_timer_1(T1_DISABLED);     // T1 zamanlayýcýsý devre dýþý 
+004D:  BCF    03.5
+004E:  CLRF   10
+....................    setup_timer_2(T2_DISABLED,0,1); // T2 zamanlayýcýsý devre dýþý 
+004F:  MOVLW  00
+0050:  MOVWF  78
+0051:  MOVWF  12
+0052:  MOVLW  00
+0053:  BSF    03.5
+0054:  MOVWF  12
+....................    setup_adc_ports(NO_ANALOGS);    // ANALOG giriþ yok 
+0055:  BSF    1F.0
+0056:  BSF    1F.1
+0057:  BSF    1F.2
+0058:  BCF    1F.3
+....................    setup_adc(ADC_OFF);             // ADC birimi devre dýþý 
+0059:  BCF    03.5
+005A:  BCF    1F.0
+....................    setup_CCP1(CCP_OFF);            // CCP1 birimi devre dýþý 
+005B:  MOVLW  F0
+005C:  ANDWF  17,F
+....................    setup_CCP2(CCP_OFF);            // CCP2 birimi devre dýþý 
+005D:  ANDWF  1D,F
+....................  
+....................    set_tris_a(0b00110000); 
+005E:  MOVLW  30
+005F:  BSF    03.5
+0060:  MOVWF  05
+....................    set_tris_b(0x00); 
+0061:  MOVLW  00
+0062:  MOVWF  06
+....................  
+....................    output_a(0b00110000);      
+0063:  MOVLW  30
+0064:  BCF    03.5
+0065:  MOVWF  05
+....................    output_b(0x00);    
+0066:  CLRF   06
+....................     
+....................    output_low(display_1);  
+0067:  BCF    05.0
+....................    output_low(display_2);  
+0068:  BCF    05.1
+....................    output_low(display_3); 
+0069:  BCF    05.2
+....................    output_high(buzzer); 
+006A:  BSF    05.3
+....................     
+.................... while(true) 
+.................... {          
+....................       sayi--; 
+006B:  DECF   22,F
+....................  
+....................       output_high(display_1);   
+006C:  BSF    05.0
+....................       output_b(digit[saniye%10]);  
+006D:  MOVF   21,W
+006E:  MOVWF  23
+006F:  MOVLW  0A
+0070:  MOVWF  24
+0071:  CALL   012
+0072:  MOVF   77,W
+0073:  CALL   004
+0074:  MOVWF  23
+0075:  MOVWF  06
+....................       delay_ms(4);              
+0076:  MOVLW  04
+0077:  MOVWF  23
+0078:  CALL   027
+....................       output_low(display_1); 
+0079:  BCF    05.0
+....................           
+....................       output_high(display_2);   
+007A:  BSF    05.1
+....................       output_b(digit[saniye/10]);  
+007B:  MOVF   21,W
+007C:  MOVWF  23
+007D:  MOVLW  0A
+007E:  MOVWF  24
+007F:  CALL   012
+0080:  MOVF   78,W
+0081:  CALL   004
+0082:  MOVWF  23
+0083:  MOVWF  06
+....................       delay_ms(3);              
+0084:  MOVLW  03
+0085:  MOVWF  23
+0086:  CALL   027
+....................       output_low(display_2); 
+0087:  BCF    05.1
+....................  
+....................       output_high(display_3);   
+0088:  BSF    05.2
+....................       output_b(digit[dakika]);  
+0089:  MOVF   20,W
+008A:  CALL   004
+008B:  MOVWF  23
+008C:  MOVWF  06
+....................       delay_ms(3);              
+008D:  MOVLW  03
+008E:  MOVWF  23
+008F:  CALL   027
+....................       output_low(display_3); 
+0090:  BCF    05.2
+....................         
+....................    if (sayi==0)   
+0091:  MOVF   22,F
+0092:  BTFSS  03.2
+0093:  GOTO   097
+....................    { 
+....................       sayi=99; 
+0094:  MOVLW  63
+0095:  MOVWF  22
+....................       saniye--; 
+0096:  DECF   21,F
+....................    } 
+....................           
+....................    if (saniye == 0) 
+0097:  MOVF   21,F
+0098:  BTFSS  03.2
+0099:  GOTO   0A6
+....................    { 
+....................       saniye=59; 
+009A:  MOVLW  3B
+009B:  MOVWF  21
+....................       if(dakika == 0) 
+009C:  MOVF   20,F
+009D:  BTFSS  03.2
+009E:  GOTO   0A5
+....................       { 
+....................          output_high(display_1);  
+009F:  BSF    05.0
+....................          output_high(display_2);  
+00A0:  BSF    05.1
+....................          output_high(display_3); 
+00A1:  BSF    05.2
+....................          output_b(0x3F); 
+00A2:  MOVLW  3F
+00A3:  MOVWF  06
+....................          output_low(buzzer); 
+00A4:  BCF    05.3
+....................       } 
+....................       dakika--; 
+00A5:  DECF   20,F
+....................    } 
+....................           
+....................    if (input(buton_azal))  
+00A6:  BTFSS  05.4
+00A7:  GOTO   0D9
+....................    { 
+....................       delay_ms(10); 
+00A8:  MOVLW  0A
+00A9:  MOVWF  23
+00AA:  CALL   027
+....................       dakika--; 
+00AB:  DECF   20,F
+....................       saniye=59; 
+00AC:  MOVLW  3B
+00AD:  MOVWF  21
+....................        
+....................       if(dakika<=0)   {  dakika=0;  } 
+00AE:  MOVF   20,F
+00AF:  BTFSC  03.2
+00B0:  CLRF   20
+....................        
+....................       while(input(buton_azal)) 
+00B1:  BTFSS  05.4
+00B2:  GOTO   0D9
+....................       { 
+....................       output_high(display_1);   
+00B3:  BSF    05.0
+....................       output_b(digit[saniye%10]);  
+00B4:  MOVF   21,W
+00B5:  MOVWF  23
+00B6:  MOVLW  0A
+00B7:  MOVWF  24
+00B8:  CALL   012
+00B9:  MOVF   77,W
+00BA:  CALL   004
+00BB:  MOVWF  23
+00BC:  MOVWF  06
+....................       delay_ms(1);              
+00BD:  MOVLW  01
+00BE:  MOVWF  23
+00BF:  CALL   027
+....................       output_low(display_1); 
+00C0:  BCF    05.0
+....................           
+....................       output_high(display_2);   
+00C1:  BSF    05.1
+....................       output_b(digit[saniye/10]);  
+00C2:  MOVF   21,W
+00C3:  MOVWF  23
+00C4:  MOVLW  0A
+00C5:  MOVWF  24
+00C6:  CALL   012
+00C7:  MOVF   78,W
+00C8:  CALL   004
+00C9:  MOVWF  23
+00CA:  MOVWF  06
+....................       delay_ms(1);              
+00CB:  MOVLW  01
+00CC:  MOVWF  23
+00CD:  CALL   027
+....................       output_low(display_2); 
+00CE:  BCF    05.1
+....................  
+....................       output_high(display_3);   
+00CF:  BSF    05.2
+....................       output_b(digit[dakika]);  
+00D0:  MOVF   20,W
+00D1:  CALL   004
+00D2:  MOVWF  23
+00D3:  MOVWF  06
+....................       delay_ms(1);              
+00D4:  MOVLW  01
+00D5:  MOVWF  23
+00D6:  CALL   027
+....................       output_low(display_3); 
+00D7:  BCF    05.2
+00D8:  GOTO   0B1
+....................       } 
+....................    }      
+....................    if (input(buton_art))  
+00D9:  BTFSS  05.5
+00DA:  GOTO   10F
+....................    { 
+....................       delay_ms(10); 
+00DB:  MOVLW  0A
+00DC:  MOVWF  23
+00DD:  CALL   027
+....................       dakika++; 
+00DE:  INCF   20,F
+....................       saniye=59; 
+00DF:  MOVLW  3B
+00E0:  MOVWF  21
+....................        
+....................       if(dakika>9)   {  dakika=9;  } 
+00E1:  MOVF   20,W
+00E2:  SUBLW  09
+00E3:  BTFSC  03.0
+00E4:  GOTO   0E7
+00E5:  MOVLW  09
+00E6:  MOVWF  20
+....................        
+....................       while(input(buton_art)) 
+00E7:  BTFSS  05.5
+00E8:  GOTO   10F
+....................       { 
+....................       output_high(display_1);   
+00E9:  BSF    05.0
+....................       output_b(digit[saniye%10]);  
+00EA:  MOVF   21,W
+00EB:  MOVWF  23
+00EC:  MOVLW  0A
+00ED:  MOVWF  24
+00EE:  CALL   012
+00EF:  MOVF   77,W
+00F0:  CALL   004
+00F1:  MOVWF  23
+00F2:  MOVWF  06
+....................       delay_ms(1);              
+00F3:  MOVLW  01
+00F4:  MOVWF  23
+00F5:  CALL   027
+....................       output_low(display_1); 
+00F6:  BCF    05.0
+....................           
+....................       output_high(display_2);   
+00F7:  BSF    05.1
+....................       output_b(digit[saniye/10]);  
+00F8:  MOVF   21,W
+00F9:  MOVWF  23
+00FA:  MOVLW  0A
+00FB:  MOVWF  24
+00FC:  CALL   012
+00FD:  MOVF   78,W
+00FE:  CALL   004
+00FF:  MOVWF  23
+0100:  MOVWF  06
+....................       delay_ms(1);              
+0101:  MOVLW  01
+0102:  MOVWF  23
+0103:  CALL   027
+....................       output_low(display_2); 
+0104:  BCF    05.1
+....................  
+....................       output_high(display_3);   
+0105:  BSF    05.2
+....................       output_b(digit[dakika]);  
+0106:  MOVF   20,W
+0107:  CALL   004
+0108:  MOVWF  23
+0109:  MOVWF  06
+....................       delay_ms(1);              
+010A:  MOVLW  01
+010B:  MOVWF  23
+010C:  CALL   027
+....................       output_low(display_3); 
+010D:  BCF    05.2
+010E:  GOTO   0E7
+....................       } 
+....................    } 
+010F:  GOTO   06B
+.................... } 
+.................... } 
+....................  
+0110:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F39   XT NOWDT NOPUT NOBROWNOUT NOLVP NOCPD NOWRT NODEBUG NOPROTECT

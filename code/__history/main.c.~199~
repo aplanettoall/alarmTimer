@@ -1,0 +1,63 @@
+#include <16F84A.h>
+#fuses HS,NOWDT,PUT,NOPROTECT
+#use delay(crystal=4000000)
+
+#use fast_io(a) 
+#use fast_io(b) 
+
+#define   birler_pin  pin_a0
+#define   onlar_pin   pin_a1
+#define   dakika_pin  pin_a2
+#define   buton_1     pin_a3
+#define   buton_2     pin_a4 
+
+signed int i=9, j=5, k=0;
+const int digit[10]={0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
+
+void main ()
+{
+   set_tris_a(0b00011000);
+   set_tris_b(0x00);
+  
+   output_low(onlar_pin);
+   output_low(birler_pin);
+   
+   output_high(birler_pin);
+   output_b(digit[i]);
+   delay_ms(5);
+   output_low(birler_pin);
+      
+   output_high(onlar_pin);
+   output_b(digit[j]);
+   delay_ms(5);
+   output_low(onlar_pin);
+      
+   while(true)
+   {  
+         output_high(birler_pin);
+         output_b(digit[i]);
+         delay_ms(5);
+         //output_low(birler_pin);
+         
+         output_high(onlar_pin);
+         output_b(digit[j]);
+         delay_ms(5);
+         //output_low(onlar_pin);
+         
+         i--;
+         
+         delay_ms(1000);
+         if(i<0)
+         {
+            j--;
+            
+            output_high(onlar_pin);
+            output_b(digit[j]);
+            delay_ms(5);
+            output_low(onlar_pin);
+         
+            i=9;
+         }
+         
+   }
+}
